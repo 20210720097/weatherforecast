@@ -2,8 +2,10 @@ package com.weatherforecast.android;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +94,12 @@ public class Choose_AreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryCountries();
 
+                } else if (currentLevel == LEVEL_COUNTRY) {
+                    String weatherId = countryList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -113,6 +121,7 @@ public class Choose_AreaFragment extends Fragment {
         titleText.setText(selectedCity.getCityName());
         backButon.setVisibility(View.VISIBLE);
         countryList = LitePal.where("cityid = ?",String.valueOf(selectedCity.getId())).find(Country.class);
+        Log.d("Utility", "countryLiat ");
         if (countryList.size() > 0) {
             datalist.clear();
             for (Country country : countryList){
@@ -177,6 +186,7 @@ public class Choose_AreaFragment extends Fragment {
                 boolean result = false;
                 if ("province".equals(type)) {
                     result = Utility.handleProvinceResponse(responseText);
+                    Log.d("Choose_areaFragment", "onResponse: ");
                 } else if ("city".equals(type)) {
                     result = Utility.handleCityResponse(responseText,selectedProvince.getId());
                 } else if ("country".equals(type)) {
